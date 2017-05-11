@@ -57,12 +57,11 @@ def __makeCognitiveApiRequest(relativeUri, body):
         'Content-Type':'application/octet-stream',
         'Ocp-Apim-Subscription-Key':'!!!TOBEREPLACED!!!',
     }
-    try:
-        conn = http.client.HTTPSConnection('westus.api.cognitive.microsoft.com')
-        conn.request("POST", relativeUri, body, headers)
-        response = conn.getresponse()
-        data = response.read()
-        conn.close()
-        return data
-    except Exception as e:
-        print(e.args)
+    conn = http.client.HTTPSConnection('westus.api.cognitive.microsoft.com')
+    conn.request("POST", relativeUri, body, headers)
+    response = conn.getresponse()
+    if response.status >= 300:
+        raise Exception(response.reason)
+    data = response.read()
+    conn.close()
+    return data
